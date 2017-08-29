@@ -1,0 +1,19 @@
+environment {
+    BUILD_NUMBER = $BUILD_NUMBER
+}
+stage 'Clone GIT'
+    node {
+       git 'https://github.com/pavanceemala/demo-ecr.git'
+    }
+stage 'Build Docker image'
+    node{
+           sh 'sudo $(aws ecr get-login --no-include-email --region us-east-1)'
+           sh 'sudo docker build -t 796098215227.dkr.ecr.us-east-1.amazonaws.com/sandbox:v_$BUILD_NUMBER .'
+           sh 'sudo docker push 796098215227.dkr.ecr.us-east-1.amazonaws.com/sandbox:v_$BUILD_NUMBER'
+        }
+
+stage 'Deploy to Cluster'
+
+    node{
+        sh './update-service.sh'
+    }
